@@ -25,6 +25,12 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { ContaContext } from '../contexts/ContaContext';
 import apiClient from "../services/api";
 import moment from "moment";
+import { AxiosError } from 'axios'; // Importar AxiosError
+
+interface IErrorMessage {
+    title: string;
+    message: string;
+}
 
 export default function Transferir() {
     const [agencia, setAgencia] = useState("")
@@ -33,7 +39,7 @@ export default function Transferir() {
     const [errors, setErrors] = useState<{ agencia?: string; conta?: string; valor?: string }>({});
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [dialogErrorOpen, setDialogErrorOpen] = useState(false)
-    const [messageError, setMessageError] = useState({
+    const [messageError, setMessageError] = useState<IErrorMessage>({
         title: "",
         message: ""
     })
@@ -72,11 +78,11 @@ export default function Transferir() {
         try {
             await apiClient.get(`/consult-agency-account/${agenciaNumber}/${contaNumber}`);
             return true;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
+        } catch (error) {
+            const axiosError = error as AxiosError<{ message?: string }>;
             setMessageError({
                 title: 'Algo deu errado!',
-                message: error.response.data.message || 'Aconteceu um erro inesperado.'
+                message: axiosError.response?.data?.message || 'Aconteceu um erro inesperado.'
             })
             setDialogErrorOpen(true)
             return false;
@@ -101,11 +107,11 @@ export default function Transferir() {
             setContaReceipt(conta)
             setValorReceipt(valor)
             return true;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
+        } catch (error) {
+            const axiosError = error as AxiosError<{ message?: string }>;
             setMessageError({
                 title: 'Algo deu errado!',
-                message: error.response.data.message || 'Aconteceu um erro inesperado.'
+                message: axiosError.response?.data?.message || 'Aconteceu um erro inesperado.'
             })
             setDialogErrorOpen(true)
             return false;
