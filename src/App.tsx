@@ -2,12 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PermanentDrawerLeft from './components/PermanentDrawerLeft';
 import BalancePage from './pages/Balance';
 import TransferPage from './pages/Transfer';
-import ContaProvider from './contexts/AccountContext';
+import AccountProvider from './contexts/AccountContext';
 
 function App() {
 
   return (
-    <ContaProvider>
+    <AccountProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<PermanentDrawerLeft />}>
@@ -18,7 +18,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </ContaProvider>
+    </AccountProvider>
 
   )
 }

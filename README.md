@@ -15,7 +15,7 @@ A arquitetura do projeto foi pensada para promover manutenibilidade, escalabilid
   A estrutura de pastas reflete uma clara separação de responsabilidades, tornando o código mais organizado e fácil de localizar:
   - `src/pages/`: Contém os componentes que representam as diferentes telas ou rotas principais da aplicação (ex: `Balance.tsx`, `Transfer.tsx`).
   - `src/components/`: Agrupa componentes de UI reutilizáveis que são utilizados em diversas partes da aplicação (ex: `BalanceComponent.tsx`, `PermanentDrawerLeft.tsx`).
-  - `src/contexts/`: Responsável pelo gerenciamento de estado global ou compartilhado entre componentes, utilizando a Context API do React (ex: `ContaContext.tsx`).
+  - `src/contexts/`: Responsável pelo gerenciamento de estado global ou compartilhado entre componentes, utilizando a Context API do React (ex: `AccountContext.tsx`).
   - `src/services/`: Encapsula a lógica de comunicação com APIs externas, como o `apiClient.ts` para interagir com o backend.
   - `src/utils/`: Armazena funções utilitárias genéricas que podem ser usadas em todo o projeto (ex: `formatters.ts`).
   - `src/assets/`: Local para arquivos estáticos como imagens, ícones SVG, etc.
