@@ -1,6 +1,6 @@
 import { createContext, useState, type ReactNode } from "react";
 
-interface IConta {
+interface IAccount {
     name: string;
     balance: string;
     agency: string;
@@ -8,16 +8,16 @@ interface IConta {
     lastUpdate: string;
 };
 
-interface IContaContextType {
-    contaContext: IConta;
-    updateContaContext: (newData: Partial<IConta>) => void;
+interface IAccountContextType {
+    accountContext: IAccount;
+    updateAccountContext: (newData: Partial<IAccount>) => void;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const ContaContext = createContext<IContaContextType | null>(null);
+export const AccountContext = createContext<IAccountContextType | null>(null);
 
-const ContaProvider = ({ children }: { children: ReactNode }) => {
-    const [contaContext, setContaContext] = useState<IConta>({
+const AccountProvider = ({ children }: { children: ReactNode }) => {
+    const [accountContext, setAccountContext] = useState<IAccount>({
         name: "",
         balance: "",
         agency: "",
@@ -25,9 +25,9 @@ const ContaProvider = ({ children }: { children: ReactNode }) => {
         lastUpdate: "",
     });
 
-    const updateContaContext = (newData: Partial<IConta>) => {
-        setContaContext((prevContaContext) => ({
-            ...prevContaContext,
+    const updateAccountContext = (newData: Partial<IAccount>) => {
+        setAccountContext((prevAccountContext) => ({
+            ...prevAccountContext,
             ...newData,
             lastUpdate: new Date().toLocaleString("pt-BR", {
                 day: "2-digit",
@@ -40,10 +40,10 @@ const ContaProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <ContaContext.Provider value={{ contaContext, updateContaContext }}>
+        <AccountContext.Provider value={{ accountContext, updateAccountContext }}>
             {children}
-        </ContaContext.Provider>
+        </AccountContext.Provider>
     );
 };
 
-export default ContaProvider;
+export default AccountProvider;

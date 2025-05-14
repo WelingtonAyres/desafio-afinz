@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Drawer from '@mui/material/Drawer';
-import SaldoComponent from '../components/SaldoComponent';
+import BalanceComponent from '../components/BalanceComponent';
 import * as yup from 'yup';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { formatAccount, formatCurrency } from '../utils/formatters';
@@ -22,21 +22,21 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { ContaContext } from '../contexts/ContaContext';
+import { AccountContext } from '../contexts/AccountContext';
 import apiClient from "../services/api";
 import moment from "moment";
-import { AxiosError } from 'axios'; // Importar AxiosError
+import { AxiosError } from 'axios';
 
 interface IErrorMessage {
     title: string;
     message: string;
 }
 
-export default function Transferir() {
-    const [agencia, setAgencia] = useState("")
-    const [conta, setConta] = useState("")
-    const [valor, setValor] = useState("0,00")
-    const [errors, setErrors] = useState<{ agencia?: string; conta?: string; valor?: string }>({});
+export default function Transfer() {
+    const [agency, setAgency] = useState("")
+    const [account, setAccount] = useState("")
+    const [amount, setAmount] = useState("0,00")
+    const [errors, setErrors] = useState<{ agency?: string; account?: string; amount?: string }>({});
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [dialogErrorOpen, setDialogErrorOpen] = useState(false)
     const [messageError, setMessageError] = useState<IErrorMessage>({
@@ -44,27 +44,27 @@ export default function Transferir() {
         message: ""
     })
     const [status, setStatus] = useState("")
-    const [dataHora, setDataHora] = useState("")
-    const [agenciaReceipt, setAgenciaReceipt] = useState("")
-    const [contaRreceipt, setContaReceipt] = useState("")
-    const [valorReceipt, setValorReceipt] = useState("")
+    const [dateTime, setDateTime] = useState("")
+    const [agencyReceipt, setAgencyReceipt] = useState("")
+    const [accountRreceipt, setAccountReceipt] = useState("")
+    const [amountReceipt, setAmountReceipt] = useState("")
 
-    const context = useContext(ContaContext);
+    const context = useContext(AccountContext);
 
     if (!context) {
         throw new Error("SaldoComponent deve ser usado dentro de um ContaProvider");
     }
 
-    const { contaContext, updateContaContext } = context
+    const { accountContext, updateAccountContext } = context
 
     const validationSchema = yup.object({
-        agencia: yup
+        agency: yup
             .string()
             .required('Agência é obrigatória'),
-        conta: yup
+        account: yup
             .string()
             .required('Conta é obrigatória'),
-        valor: yup
+        amount: yup
             .number()
             .transform((_value, originalValue) => String(originalValue).includes(',') ? parseFloat(String(originalValue).replace('.', '').replace(',', '.')) : parseFloat(String(originalValue)))
             .typeError('Valor deve ser um número')
@@ -73,10 +73,10 @@ export default function Transferir() {
     });
 
     const consultAgencyAccount = async () => {
-        const agenciaNumber = Number(agencia.replace(/\D/g, ""))
-        const contaNumber = Number(conta.replace(/\D/g, ""))
+        const agencyNumber = Number(agency.replace(/\D/g, ""))
+        const accountNumber = Number(account.replace(/\D/g, ""))
         try {
-            await apiClient.get(`/consult-agency-account/${agenciaNumber}/${contaNumber}`);
+            await apiClient.get(`/consult-agency-account/${agencyNumber}/${accountNumber}`);
             return true;
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string }>;
@@ -90,22 +90,22 @@ export default function Transferir() {
     }
 
     const transferValue = async () => {
-        const valorNumber = Number(valor.replace(/\D/g, ""))
-        const agenciaNumber = Number(agencia.replace(/\D/g, ""))
-        const contaNumber = Number(conta.replace(/\D/g, ""))
+        const amountNumber = Number(amount.replace(/\D/g, ""))
+        const agencyNumber = Number(agency.replace(/\D/g, ""))
+        const accountNumber = Number(account.replace(/\D/g, ""))
         try {
             const response = await apiClient.post("/transfer", {
-                value: valorNumber,
-                agency: agenciaNumber,
-                account: contaNumber
+                value: amountNumber,
+                agency: agencyNumber,
+                account: accountNumber
             });
-            dataFormatada(response.data.dateTime)
+            formattedDate(response.data.dateTime)
             setStatus(response.data.status)
-            const currentValueAccount = Number(contaContext.balance.replace(/\D/g, "")) - valorNumber
-            updateContaContext({ balance: formatCurrency(currentValueAccount.toString()) })
-            setAgenciaReceipt(agencia)
-            setContaReceipt(conta)
-            setValorReceipt(valor)
+            const currentValueAccount = Number(accountContext.balance.replace(/\D/g, "")) - amountNumber
+            updateAccountContext({ balance: formatCurrency(currentValueAccount.toString()) })
+            setAgencyReceipt(agency)
+            setAccountReceipt(account)
+            setAmountReceipt(amount)
             return true;
         } catch (error) {
             const axiosError = error as AxiosError<{ message?: string }>;
@@ -122,8 +122,8 @@ export default function Transferir() {
         let sendValue = 0
         let currentValue = 0
 
-        sendValue = Number(valor.replace(/\D/g, ""))
-        currentValue = Number(contaContext.balance.replace(/\D/g, ""))
+        sendValue = Number(amount.replace(/\D/g, ""))
+        currentValue = Number(accountContext.balance.replace(/\D/g, ""))
 
         if (sendValue > currentValue) {
             setMessageError({
@@ -143,9 +143,9 @@ export default function Transferir() {
         if (!transferValueBoolean) {
             return;
         }
-        setAgencia("")
-        setConta("")
-        setValor("0,00")
+        setAgency("")
+        setAccount("")
+        setAmount("0,00")
         setDrawerOpen(true)
     }
 
@@ -155,12 +155,12 @@ export default function Transferir() {
         event.preventDefault();
         setErrors({});
         try {
-            await validationSchema.validate({ agencia, conta, valor }, { abortEarly: false });
+            await validationSchema.validate({ agency, account, amount }, { abortEarly: false });
             await transfer()
 
         } catch (err) {
             if (err instanceof yup.ValidationError) {
-                const newErrors: { agencia?: string; conta?: string; valor?: string } = {};
+                const newErrors: { agency?: string; account?: string; amount?: string } = {};
                 err.inner.forEach(error => {
                     if (error.path) {
                         newErrors[error.path as keyof typeof newErrors] = error.message;
@@ -171,10 +171,10 @@ export default function Transferir() {
         }
     }
 
-    const dataFormatada = (milissegundos: number) => {
+    const formattedDate = (milissegundos: number) => {
         const timestamp = milissegundos;
-        const dataFormatada = moment(timestamp).utc().format("DD/MM/YYYY - HH:mm");
-        setDataHora(dataFormatada)
+        const newFormattedDate = moment(timestamp).utc().format("DD/MM/YYYY - HH:mm");
+        setDateTime(newFormattedDate)
     };
 
     return (
@@ -220,15 +220,15 @@ export default function Transferir() {
                                             variant="outlined"
                                             size="small"
                                             sx={{ width: '100%' }}
-                                            value={agencia}
+                                            value={agency}
                                             onChange={(e) => {
-                                                const valor = e.target.value;
-                                                if (valor === "" || /^\d+$/.test(valor)) {
-                                                    setAgencia(valor);
+                                                const value = e.target.value;
+                                                if (value === "" || /^\d+$/.test(value)) {
+                                                    setAgency(value);
                                                 }
                                             }}
-                                            error={!!errors.agencia}
-                                            helperText={errors.agencia}
+                                            error={!!errors.agency}
+                                            helperText={errors.agency}
                                         />
                                     </Grid>
                                     <Grid size={12}>
@@ -237,12 +237,12 @@ export default function Transferir() {
                                             variant="outlined"
                                             size="small"
                                             sx={{ width: '100%' }}
-                                            value={conta}
+                                            value={account}
                                             onChange={(e) => {
-                                                setConta(formatAccount(e.target.value))
+                                                setAccount(formatAccount(e.target.value))
                                             }}
-                                            error={!!errors.conta}
-                                            helperText={errors.conta}
+                                            error={!!errors.account}
+                                            helperText={errors.account}
                                         />
                                     </Grid>
                                     <Grid size={12}>
@@ -251,12 +251,12 @@ export default function Transferir() {
                                             variant="outlined"
                                             size="small"
                                             sx={{ width: '100%' }}
-                                            value={valor}
+                                            value={amount}
                                             onChange={(e) => {
-                                                setValor(formatCurrency(e.target.value))
+                                                setAmount(formatCurrency(e.target.value))
                                             }}
-                                            error={!!errors.valor}
-                                            helperText={errors.valor}
+                                            error={!!errors.amount}
+                                            helperText={errors.amount}
                                         />
                                     </Grid>
                                 </Grid>
@@ -268,7 +268,7 @@ export default function Transferir() {
                     </Card>
                 </form>
                 <Box sx={{ ml: 6 }}>
-                    <SaldoComponent visibleAccont={false} />
+                    <BalanceComponent visibleAccont={false} />
                 </Box>
             </Box>
             <Drawer
@@ -282,21 +282,21 @@ export default function Transferir() {
                 </Box>
                 <Box sx={{ width: 412, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', p: 3 }}>
                     <Typography sx={{ fontSize: 16, fontWeight: 400 }}>Novo Saldo</Typography>
-                    <Typography sx={{ color: '#333333', fontSize: 24, fontWeight: 700 }}>R$ {contaContext.balance}</Typography>
+                    <Typography sx={{ color: '#333333', fontSize: 24, fontWeight: 700 }}>R$ {accountContext.balance}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 1 }}>Status</Typography>
                     <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{status}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 1 }}>Data - Hora</Typography>
-                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{dataHora}</Typography>
+                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{dateTime}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 1 }}>Agência</Typography>
-                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{agenciaReceipt}</Typography>
+                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{agencyReceipt}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 1 }}>Conta</Typography>
-                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{contaRreceipt}</Typography>
+                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{accountRreceipt}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 3 }}>Valor</Typography>
-                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>R$ {valorReceipt}</Typography>
+                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>R$ {amountReceipt}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 1 }}>Sua conta</Typography>
-                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{contaContext.account}</Typography>
+                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{accountContext.account}</Typography>
                     <Typography sx={{ fontSize: 18, fontWeight: 700, mt: 1 }}>Sua agência</Typography>
-                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{contaContext.agency}</Typography>
+                    <Typography sx={{ color: '#B5B5B5', fontSize: 16, fontWeight: 400 }}>{accountContext.agency}</Typography>
                 </Box>
             </Drawer>
 

@@ -23,13 +23,13 @@ export default function NavTabs() {
     const navigate = useNavigate();
 
     const pathToValue: { [key: string]: number } = {
-        '/saldo': 0,
-        '/transferir': 1,
+        '/balance': 0,
+        '/transfer': 1,
     };
 
     const valueToPath: { [key: number]: string } = {
-        0: '/saldo',
-        1: '/transferir',
+        0: '/balance',
+        1: '/transfer',
     };
 
     const currentValue = pathToValue[location.pathname] !== undefined ? pathToValue[location.pathname] : false;
@@ -62,8 +62,8 @@ export default function NavTabs() {
                     },
                 }}
             >
-                <LinkTab label="Saldo" to="/saldo" />
-                <LinkTab label="Transferir" to="/transferir" />
+                <LinkTab label="Saldo" to="/balance" />
+                <LinkTab label="Transferir" to="/transfer" />
             </Tabs>
         </Box>
     );

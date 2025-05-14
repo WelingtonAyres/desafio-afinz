@@ -6,14 +6,14 @@ import CardContent from '@mui/material/CardContent';
 import IconRetangle from '../assets/IconRetangle.svg'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { ContaContext } from '../contexts/ContaContext';
+import { AccountContext } from '../contexts/AccountContext';
 
-export default function SaldoComponent({ visibleAccont = true }) {
-    const context = useContext(ContaContext);
+export default function BalanceComponent({ visibleAccont = true }) {
+    const context = useContext(AccountContext);
     if (!context) {
         throw new Error("SaldoComponent deve ser usado dentro de um ContaProvider");
     }
-    const { contaContext } = context;
+    const { accountContext } = context;
     const [visible, setVisible] = useState(true)
     return (
         <Card sx={{ width: 333, borderRadius: 5, mt: 5 }}>
@@ -33,7 +33,7 @@ export default function SaldoComponent({ visibleAccont = true }) {
 
                 {visible ? (
                     <Typography sx={{ fontSize: 29, fontWeight: 700 }}>
-                        R$ {contaContext.balance}
+                        R$ {accountContext.balance}
                     </Typography>
                 ) : (
                     <img src={IconRetangle}></img>
@@ -41,7 +41,7 @@ export default function SaldoComponent({ visibleAccont = true }) {
 
 
                 <Typography sx={{ color: '#657A95', fontSize: 12, fontWeight: 400 }}>
-                    Atualizado em {contaContext.lastUpdate}
+                    Atualizado em {accountContext.lastUpdate}
                 </Typography>
 
                 {(visible && visibleAccont) && (
@@ -51,7 +51,7 @@ export default function SaldoComponent({ visibleAccont = true }) {
                                 Agência
                             </Typography>
                             <Typography sx={{ color: '#657A95', fontSize: 16, fontWeight: 700 }}>
-                                {contaContext.agency}
+                                {accountContext.agency}
                             </Typography>
                         </Box>
                         <Box>
@@ -59,7 +59,7 @@ export default function SaldoComponent({ visibleAccont = true }) {
                                 Conta
                             </Typography>
                             <Typography sx={{ color: '#657A95', fontSize: 16, fontWeight: 700 }}>
-                                {contaContext.account}
+                                {accountContext.account}
                             </Typography>
                         </Box>
                     </Box>

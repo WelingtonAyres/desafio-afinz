@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PermanentDrawerLeft from './components/PermanentDrawerLeft';
-import SaldoPage from './pages/Saldo';
-import TransferirPage from './pages/Transferir';
-import ContaProvider from './contexts/ContaContext';
+import BalancePage from './pages/Balance';
+import TransferPage from './pages/Transfer';
+import ContaProvider from './contexts/AccountContext';
 
 function App() {
 
@@ -11,10 +11,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<PermanentDrawerLeft />}>
-            <Route index element={<Navigate to="saldo" replace />} />
-            <Route path="saldo" element={<SaldoPage />} />
-            <Route path="transferir" element={<TransferirPage />} />
-            <Route path="*" element={<Navigate to="/saldo" replace />} />
+            <Route index element={<Navigate to="balance" replace />} />
+            <Route path="balance" element={<BalancePage />} />
+            <Route path="transfer" element={<TransferPage />} />
+            <Route path="*" element={<Navigate to="/balance" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
