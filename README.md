@@ -102,7 +102,7 @@ A arquitetura do projeto foi pensada para promover manutenibilidade, escalabilid
 ## Estrutura de Pastas Principal
 
 ```
-desafio/
+desafio-afinz/
 ├── public/               # Arquivos estáticos públicos
 ├── src/                  # Código fonte da aplicação
 │   ├── assets/
