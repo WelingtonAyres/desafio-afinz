@@ -11,7 +11,7 @@ import { AccountContext } from '../contexts/AccountContext';
 export default function BalanceComponent({ visibleAccont = true }) {
     const context = useContext(AccountContext);
     if (!context) {
-        throw new Error("SaldoComponent deve ser usado dentro de um ContaProvider");
+        throw new Error("SaldoComponent deve ser usado dentro de um AccountProvider");
     }
     const { accountContext } = context;
     const [visible, setVisible] = useState(true)
